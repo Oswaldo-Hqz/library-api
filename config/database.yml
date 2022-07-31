@@ -81,6 +81,7 @@ test:
 #
 production:
   <<: *default
-  database: u_library_production
-  username: u_library
+  database: d4tvvgenhrl2u1 #u_library_production
+  username: hfeadwmhlykgno #u_library
   password: <%= ENV["U_LIBRARY_DATABASE_PASSWORD"] %>
+  port: 5432
