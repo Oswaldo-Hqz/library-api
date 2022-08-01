@@ -1,13 +1,31 @@
 class Api::V1::UsersController < ApplicationController
-    before_action :require_login, only: [:index, :profile, :create]
+    before_action :require_login, only: [:index, :profile, :user_by_Email, :create]
 
     def index
-        @users = User.all
+        @users = User
+                    .select('users.id, users.first_name, users.last_name, 
+                             users.email, users.role_id, roles.role_name')
+                    .joins("INNER JOIN roles ON users.role_id = roles.id")
         render json: @users, status: :ok
     end
 
-    def show
-        @user = User.find(params[:id])
+    def profile
+        @user = User.select('users.id, users.first_name, users.last_name, 
+                             users.email, users.role_id, roles.role_name')
+                    .joins("INNER JOIN roles ON users.role_id = roles.id")
+                    .where("users.id = ?", params[:id])
+        if @user
+            render json: @user, status: :ok
+        else
+            render json: { status: 500, errors: ['user not found'] }
+        end
+    end
+
+    def user_by_Email
+        @user = User.select('users.id, users.first_name, users.last_name, 
+                             users.email, users.role_id, roles.role_name')
+                    .joins("INNER JOIN roles ON users.role_id = roles.id")
+                    .where("users.email = ?", params[:email])
         if @user
             render json: @user, status: :ok
         else

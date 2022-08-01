@@ -1,20 +1,27 @@
 class Api::V1::BooksController < ApplicationController
 
     skip_before_action :require_login, only: [:index, :show]
-    before_action :set_book, only: [:show, :update, :destroy]
+    before_action :set_book, only: [:update, :destroy]
 
     # GET /api/v1/books
     def index
-        @books = Book.all
+        @books = Book
+                    .select('books.id, books.title, books.author, books.published_year, 
+                             books.copies, books.genre_id, genres.genre_name')
+                    .joins("INNER JOIN genres ON books.genre_id = genres.id")
         render json: @books
     end
     
     # GET /api/v1/books/1
     def show
+        @book = Book.select('books.id, books.title, books.author, books.published_year, 
+                             books.copies, books.genre_id, genres.genre_name')
+                    .joins("INNER JOIN genres ON books.genre_id = genres.id")
+                    .where("books.id = ?", params[:id])
         if @book
             render json: @book            
         else
-            render json: {}
+            render json: { status: 500, errors: ['Book not found'] }
         end
     end
 
@@ -48,7 +55,7 @@ class Api::V1::BooksController < ApplicationController
     
         def set_book
             if Book.exists?(params[:id])
-                @book = Book.find(params[:id])                
+                @book = Book.find(params[:id])
             end
         end
   
