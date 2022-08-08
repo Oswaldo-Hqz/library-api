@@ -5,21 +5,23 @@ class Api::V1::BooksController < ApplicationController
 
     # GET /api/v1/books
     def index
-        @books = Book
+        books = Book
                     .select('books.id, books.title, books.author, books.published_year, 
                              books.copies, books.genre_id, genres.genre_name')
                     .joins("INNER JOIN genres ON books.genre_id = genres.id")
-        render json: @books
+                    .where("books.copies > 0")
+        render json: books
     end
     
     # GET /api/v1/books/1
     def show
-        @book = Book.select('books.id, books.title, books.author, books.published_year, 
+        book = Book
+                    .select('books.id, books.title, books.author, books.published_year, 
                              books.copies, books.genre_id, genres.genre_name')
                     .joins("INNER JOIN genres ON books.genre_id = genres.id")
                     .where("books.id = ?", params[:id])
-        if @book
-            render json: @book            
+        if book
+            render json: book            
         else
             render json: { status: 500, errors: ['Book not found'] }
         end
