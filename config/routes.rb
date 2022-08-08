@@ -10,6 +10,7 @@ Rails.application.routes.draw do
 
       resources :borrowings, only: [:index, :show, :create, :update, :destroy]
       post "/return_book", to: "borrowings#return_book"
+      post "/borrowed_books_by_userid/:id", to: "borrowings#borrowed_books"
 
       resources :users, only: [:index, :create]
       get "/profile/:id", to: "users#profile"
